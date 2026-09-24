@@ -10,10 +10,10 @@ While `R CMD check` verifies that documentation exists and matches usage, there 
 
 Documentation that is hard to read, whether because of dense sentences or a tone that assumes things are obvious, increases cognitive load [@sweller1988], frustrates users, and can be a real barrier to adoption.
 
-Organisations like rOpenSci recognise this, and their software review process asks reviewers to judge whether documentation is clear and sufficient [@ropensci2026].
+Organisations like rOpenSci recognise this, and their [software review process](https://devguide.ropensci.org/) asks reviewers to judge whether documentation is clear and sufficient.
 The problem is also growing: R packages are increasingly written with the help of, or exclusively by, AI tools, and without oversight it's easy to end up with verbose documentation.
 
 Some prior work exists. The [docreview](https://github.com/thisisnic/docreview) package, on CRAN between 2021 and 2024, contained 5 checks including readability scores, but stalled due to the complexity of its architecture. The [spelling](https://docs.ropensci.org/spelling/) package checks words but not prose.
-Outside of R, Vale [@vale] is a mature documentation linter with prose rules and packaged style guides, which runs in editors and on CI. It handles Markdown and can extract the text of comments from R source files, but it has no knowledge of R package structure or R vocabulary, its built-in styles flag function and argument names as spelling errors, and using it requires installing and configuring a separate binary outside of R.
+Outside of R, [Vale](https://vale.sh) is a mature documentation linter with prose rules and packaged style guides, which runs in editors and on CI. It handles Markdown and can extract the text of comments from R source files, but it has no knowledge of R package structure or R vocabulary, its built-in styles flag function and argument names as spelling errors, and using it requires installing and configuring a separate binary outside of R.
 
 The R ecosystem lacks an opinionated documentation linter, usable from R, that helps both humans and AI tools write better docs for R packages.

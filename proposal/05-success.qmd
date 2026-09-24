@@ -24,9 +24,9 @@ How will we know when success is achieved, what markers can we use
 along the way
 -->
 
-During the project, progress is tracked by milestone completion against the dates in the project plan, with work visible in public GitHub issues.
-After release, the main indicators are the number of packages using the GitHub Action, found via GitHub code search, and rules or vocabulary contributed by people outside the project.
-Completion of the grant does not depend on adoption, since uptake of developer tooling takes longer than the grant period.
+The project is successful if a package author can go from nothing to a first set of lints in a couple of minutes, with a default style that reports real problems rather than noise, and if the tool becomes a normal part of how people check documentation in the same way lintr is for code.
+The first is measured directly: the tuning run over the 100 most downloaded CRAN packages shows the hit rate per rule and how many of those hits are false positives, and the defaults are set from that.
+The second shows up as packages adding the GitHub Action to their CI, issues and pull requests from people outside the project, and the style being picked up by people who use Vale without the R package.
 
 ## Future work
 <!--
