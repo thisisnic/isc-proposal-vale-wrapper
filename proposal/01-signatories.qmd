@@ -18,6 +18,8 @@ to the project. Include public artifacts such as code repositories to
 show their tack record.
 -->
 
+- [Nic Crane](https://github.com/thisisnic): R developer with over 10 years of experience, one of the maintainers of the [arrow](https://arrow.apache.org/docs/r/) R package and contributor to [ellmer](https://ellmer.tidyverse.org/).
+
 ## Contributors
 <!--
 Who are the people who have actively helped with this proposal but
@@ -29,4 +31,6 @@ won't necessarily be on the core project team later?
 Who has been given the opportunity to provide feedback on the
 proposal?
 -->
+
+- [Etienne Bacher](https://www.etiennebacher.com/): independent developer, author of [jarl](https://jarl.etiennebacher.com/), a fast linter for R funded by the ISC in 2025.
 
