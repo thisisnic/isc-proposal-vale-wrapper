@@ -17,6 +17,16 @@ section.
 Include concrete actions you will take and estimated timeline.
 -->
 
+This proposal outlines a documentation linting tool in the form of a Rust binary which can be run on the command line and on CI, following the model of air and jarl. 
+
+It provides instant feedback on documentation quality, enabling both humans and AI tools to produce better quality documentation that will be clear and easy to understand for end users.
+
+The tool lints key user-facing package documentation: Roxygen headers, package vignettes, package READMEs and error/warning messages.
+
+The applied rules are configurable by the end user, according to taste, with the defaults reflecting established advice on writing for users, drawing on the tidyverse style guide and conventions built into existing linters such as Vale.
+
+The project will deliver the linter, a GitHub Action and the first set of rules between January and April 2027, with later milestones adding a pre-commit hook, AGENTS.md support and a thin R wrapper package.
+
 ## Detail
 <!--
 Go into more detail about the specifics of the project and how it delivers
@@ -27,15 +37,25 @@ Depending on project type the detail section should include:
 
 ### Minimum Viable Product
 
-<!--
-What is the smallest thing you can build that delivers value to your users?
--->
+The MVP for this project is a small utility which runs on the command line and returns a list of lints, including the file name, line number, the rule which was violated, and a message explaining what was wrong. The output will be in human-readable format by default, with an option to output in JSON for AI tools and CI reporting.
+
+The MVP will cover documentation in Roxygen headers, package vignettes, and any README present in the repository. 
+
+As the intention is that users can use this tool on CI, the MVP will also include a GitHub Action to run it.
+
+In terms of rules applied to the text, the MVP will cover sentence length, a readability score for each help topic and vignette section with a configurable threshold, and use of words often reported by readers as condescending like "simply", "just", "easy", "obviously", and "clearly". The rules will be configurable via a config file in the package root directory.
+
+Once the MVP exists, adding new rules and other sources of text such as error messages is incremental work. Later milestones include adding a pre-commit hook, a command that writes the active rules into a project's AGENTS.md, and a thin R package that installs and runs the binary.
 
 ### Architecture
 
-<!--
-What does the high-level architecture look like?
--->
+The tool will be written in Rust, and will have 3 main components:
+
+1 - the parser - this will use air's R parser, similarly to jarl. This allows for extraction of Roxygen headers. Vignettes and READMEs will be parsed using a Markdown parser such as pulldown-cmark.
+
+2 - the text layer - converting the parser's output to plain text segments with associated file and line markers. This means that adding a new source, such as error messages, only requires implementing the text converter.
+
+3 - rules, config, and tests - rules sit on top of the text layer and share a common interface so that adding a new one doesn't affect the parser itself. How rules are defined will be settled early in the project, drawing on both jarl's approach and Vale's, which specifies rules as data rather than code. Rules are configured from a file at the package root and each has its own tests.
 
 ### Assumptions
 
@@ -43,8 +63,22 @@ What does the high-level architecture look like?
 What assumptions are you making that, if proven false, would invalidate the project?
 -->
 
+Assumptions and ideas for mitigation are as follows:
+
+- air's R parser can be used as a library, as jarl already does. If this changes, tree-sitter-r is the fallback.
+- Useful prose rules don't need heavy NLP. Sentence splitting, syllable counting and word lists are enough for the rules in scope, including readability scores, as Vale shows.
+- Sensible defaults can be found empirically. Work on docreview showed that readability scores are sensitive to text length, and a threshold that works for a vignette is wrong for a two-line parameter description. Rather than guessing, the defaults and any minimum text length for a rule to apply will be set by running the tool over real packages and looking at the distribution of scores, so that the rules aren't noisy out of the box.
+- Building on air's parser and jarl's design keeps the amount of novel Rust small. The parser layer is the first milestone, so that this is proven before the rule work starts.
+
 ### External dependencies
 
 <!--
 What external dependencies does the project have (e.g. libraries, services, other projects, etc.)?
 -->
+
+- air's R parser crates, pinned to a specific revision as jarl does.
+- A Rust Markdown parser such as pulldown-cmark.
+- jarl, not as a code dependency but as the design reference.
+- GitHub Actions for CI and releases.
+
+Nothing requires a service or a paid account, so there are no ongoing costs.
