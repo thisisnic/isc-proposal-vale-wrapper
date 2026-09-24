@@ -6,12 +6,12 @@ bibliography: references.bib
 
 When working in R, it's already common to have standard conventions for code style: packages like [lintr](https://lintr.r-lib.org/) [@hester2025] and tools like [air](https://posit-dev.github.io/air/) and [jarl](https://jarl.etiennebacher.com/) are widely used to ensure that code conforms to agreed standards.
 Documentation doesn't receive the same attention.
-While `R CMD check` verifies that documentation exists and matches usage, there is no common tooling for ensuring that docs are readable by a human, and this responsibility falls to authors and reviewers.
+While `R CMD check` verifies that documentation exists and matches usage, there is no common tooling for ensuring that docs are readable by a human, whether that is the help pages, vignettes and READMEs read by users or the code comments read by contributors, and this responsibility falls to authors and reviewers.
 
-Complex and confusing documentation increases cognitive load [@sweller1988], frustrates users, and can be a real barrier to adoption.
-Long sentences, unexplained jargon and a tone that assumes things are obvious all add to this, and the problem is bigger for newcomers and people for whom English is not their first language.
+Documentation that is hard to read, whether because of dense sentences or a tone that assumes things are obvious, increases cognitive load [@sweller1988], frustrates users, and can be a real barrier to adoption.
+
 Organisations like rOpenSci recognise this, and their software review process asks reviewers to judge whether documentation is clear and sufficient [@ropensci2026].
-The problem is also growing: R packages are increasingly written with the help of, or exclusively by, AI tools, and without oversight it's easy to end up with verbose and jargon-filled documentation.
+The problem is also growing: R packages are increasingly written with the help of, or exclusively by, AI tools, and without oversight it's easy to end up with verbose documentation.
 
 Some prior work exists. The [docreview](https://github.com/thisisnic/docreview) package, on CRAN between 2021 and 2024, contained 5 checks including readability scores, but stalled due to the complexity of its architecture. The [spelling](https://docs.ropensci.org/spelling/) package checks words but not prose.
 Outside of R, Vale [@vale] is a mature documentation linter with prose rules and packaged style guides, which runs in editors and on CI. It handles Markdown and can extract the text of comments from R source files, but it has no knowledge of R package structure or R vocabulary, its built-in styles flag function and argument names as spelling errors, and using it requires installing and configuring a separate binary outside of R.

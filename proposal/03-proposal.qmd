@@ -18,7 +18,7 @@ Include concrete actions you will take and estimated timeline.
 -->
 
 This proposal is for an R package which wraps Vale, together with a Vale style written for R package documentation, so that documentation can be linted from R, on the command line and on CI.
-It lints the user-facing documentation of a package: code comments in R source files, vignettes and READMEs, and reports the file, line, rule and a message explaining what was wrong, as a data frame in R or as JSON for AI tools and CI reporting.
+It lints both the external documentation of a package, its vignettes and READMEs, and the comments in its R source files, including the roxygen comments from which help pages are generated, and reports the file, line, rule and a message explaining what was wrong, as a data frame in R or as JSON for AI tools and CI reporting.
 
 Vale already provides rules for sentence length, readability scores, and words often reported by readers as condescending like "simply", "just" and "obviously", spread across several existing styles and tuned for general prose.
 The work in this project is to select the subset of those rules that make sense for R package documentation, set their thresholds by running them over real packages so that they aren't noisy out of the box, and add a vocabulary of common R terms.
