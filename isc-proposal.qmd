@@ -1,10 +1,9 @@
 ---
-title: "Proposal Title"
+title: "A documentation linter for R packages"
 author:
-  - name: Annie Easley
-    orcid: 5555-5555-5555-5555
+  - name: Nic Crane
     affiliations:
-      - "Lewis Research Center, National Aeronautics and Space Administration"
+      - "NC Data Labs Ltd"
 
 date: today
 date-format: iso
