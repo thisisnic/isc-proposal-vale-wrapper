@@ -13,13 +13,14 @@ What does success look like?
 
 The project is complete when:
 
-- a tagged release is published with binaries for Linux, macOS and Windows
-- the tool lints Roxygen headers, vignettes, READMEs and error messages, with rules configurable from a file at the package root
-- the core rules ship, including sentence length, a readability score and the word list, each with snapshot tests and a page in the rule reference on the project website
+- the package is published on CRAN and installs or locates Vale on Linux, macOS and Windows
+- the tool lints R code comments, vignettes, READMEs and NEWS files, with rules configurable from a file at the package root
+- the default style ships, including sentence length, a readability score, the condescending word list and the R vocabulary, each with snapshot tests and a page in the rule reference on the project website
+- the style is published so that it can be installed and used directly by Vale users without the R package
 - with the default rules, a package the size of dplyr lints in a few seconds
 - the tool runs without error, with its defaults tuned, on the 100 most downloaded CRAN packages
 - the GitHub Action and pre-commit hook are published and documented
-- the AGENTS.md command and the R wrapper package are released and documented
+- the AGENTS.md command is released and documented
 
 ## Measuring success
 <!--
@@ -30,7 +31,7 @@ along the way
 During the project, progress is tracked by milestone completion against the dates in the project plan, with work visible in public GitHub issues.
 
 During the preview, the indicators are the number of packages it is tried on and the issues raised by people outside the project.
-After release, the main indicators are the number of packages using the GitHub Action, found via GitHub code search, and rules or configuration contributed by people outside the project. Completion of the grant does not depend on adoption, since uptake of developer tooling takes longer than the grant period.
+After release, the main indicators are the number of packages using the GitHub Action, found via GitHub code search, and rules or vocabulary contributed by people outside the project. Completion of the grant does not depend on adoption, since uptake of developer tooling takes longer than the grant period.
 
 ## Future work
 <!--
@@ -38,8 +39,8 @@ How could this be extended / developed in the future by yourself
 and/or the community in general?
 -->
 
-- Editor integration via a language server, following jarl
+- Roxygen-aware linting, so that rules can be applied per help topic and scoped to specific tags, and example code is not treated as prose
+- Linting of error and warning messages
 - Suggested fixes attached to lints, applied in the editor
-- Named style packs, as Vale has, so that organisations with a house style can publish their own rule sets
-- Defining rules as data rather than code, so that people can contribute rules without writing Rust
+- Additional named styles, so that organisations with a house style can publish their own rule sets for R packages
 - Further work to expand the ruleset once the tool is in use.

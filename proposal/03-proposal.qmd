@@ -17,15 +17,15 @@ section.
 Include concrete actions you will take and estimated timeline.
 -->
 
-This proposal outlines a documentation linting tool in the form of a Rust binary which can be run on the command line and on CI, following the model of air and jarl. 
+This proposal outlines a documentation linting tool in the form of an R package which wraps Vale, so that it can be run from R, on the command line and on CI, together with a Vale style written for R package documentation.
 
 It provides instant feedback on documentation quality, enabling both humans and AI tools to produce better quality documentation that will be clear and easy to understand for end users.
 
-The tool lints key user-facing package documentation: Roxygen headers, package vignettes, package READMEs and error/warning messages.
+The tool lints key user-facing package documentation: code comments in R source files, package vignettes, package READMEs and NEWS files.
 
-The applied rules are configurable by the end user, according to taste, with the defaults reflecting established advice on writing for users, drawing on the tidyverse style guide and conventions built into existing linters such as Vale.
+The applied rules are configurable by the end user, according to taste, with the defaults reflecting established advice on writing for users, drawing on the conventions built into existing Vale styles such as those for the Google and Microsoft developer documentation style guides.
 
-The project will deliver the linter, a GitHub Action and the first set of rules between January and April 2027, with later milestones adding a pre-commit hook, AGENTS.md support and a thin R wrapper package.
+The project will deliver the R package, the style, a GitHub Action and the first set of rules between January and April 2027, with later milestones adding a pre-commit hook and AGENTS.md support.
 
 ## Detail
 <!--
@@ -37,25 +37,25 @@ Depending on project type the detail section should include:
 
 ### Minimum Viable Product
 
-The MVP for this project is a small utility which runs on the command line and returns a list of lints, including the file name, line number, the rule which was violated, and a message explaining what was wrong. The output will be in human-readable format by default, with an option to output in JSON for AI tools and CI reporting.
+The MVP for this project is a small R package which installs Vale, runs it over a package, and returns a list of lints, including the file name, line number, the rule which was violated, and a message explaining what was wrong. The output will be a data frame in R and human-readable text on the command line, with an option to output in JSON for AI tools and CI reporting.
 
-The MVP will cover documentation in Roxygen headers, package vignettes, and any README present in the repository. 
+The MVP will cover documentation in R code comments, package vignettes, and any README present in the repository.
 
 As the intention is that users can use this tool on CI, the MVP will also include a GitHub Action to run it.
 
-In terms of rules applied to the text, the MVP will cover sentence length, a readability score for each help topic and vignette section with a configurable threshold, and use of words often reported by readers as condescending like "simply", "just", "easy", "obviously", and "clearly". The rules will be configurable via a config file in the package root directory.
+In terms of rules applied to the text, Vale already provides rules for sentence length, readability scores, and use of words often reported by readers as condescending like "simply", "just", "easy", "obviously", and "clearly", spread across several existing styles with thresholds tuned for general prose. The work in the MVP is to select the subset of these rules that make sense for R package documentation, set their thresholds so that they aren't noisy on real packages, and add a vocabulary of common R terms so that these aren't reported as errors. Together these form the default style that ships with the package. The rules will be configurable via a Vale config file in the package root directory, which the package can generate with sensible defaults.
 
-Once the MVP exists, adding new rules and other sources of text such as error messages is incremental work. Later milestones include adding a pre-commit hook, a command that writes the active rules into a project's AGENTS.md, and a thin R package that installs and runs the binary.
+Once the MVP exists, adding rules that don't already exist in Vale and other sources of text such as NEWS files is incremental work. Later milestones include adding a pre-commit hook and a command that writes the active rules into a project's AGENTS.md.
 
 ### Architecture
 
-The tool will be written in Rust, and will have 3 main components:
+The tool will be written in R and Vale's YAML rule format, and will have 3 main components:
 
-1 - the parser - this will use air's R parser, similarly to jarl. This allows for extraction of Roxygen headers. Vignettes and READMEs will be parsed using a Markdown parser such as pulldown-cmark.
+1 - the binary - the package will find an existing Vale installation, or download the Vale binary for the user's platform from Vale's GitHub Releases when the user asks it to, following the pattern used by packages such as tinytex and pandoc. Vale handles extracting comments from R files and parsing Markdown.
 
-2 - the text layer - converting the parser's output to plain text segments with associated file and line markers. This means that adding a new source, such as error messages, only requires implementing the text converter.
+2 - the style - a Vale style, which is a directory of rules defined as data rather than code, together with a vocabulary of R terms. This is published so that it can also be used by people who run Vale directly, without the R package.
 
-3 - rules, config, and tests - rules sit on top of the text layer and share a common interface so that adding a new one doesn't affect the parser itself. How rules are defined will be settled early in the project, drawing on both jarl's approach and Vale's, which specifies rules as data rather than code. Rules are configured from a file at the package root and each has its own tests.
+3 - the R interface, config, and tests - functions to generate a config file at the package root, run Vale, and return the results as a data frame, along with the GitHub Action. Rules are configured from the config file and each has its own tests.
 
 ### Assumptions
 
@@ -65,10 +65,10 @@ What assumptions are you making that, if proven false, would invalidate the proj
 
 Assumptions and ideas for mitigation are as follows:
 
-- air's R parser can be used as a library, as jarl already does. If this changes, tree-sitter-r is the fallback.
+- Vale continues to be maintained and its support for extracting comments from R files remains adequate. Vale is actively developed, and has a stable release process with binaries for all major platforms.
 - Useful prose rules don't need heavy NLP. Sentence splitting, syllable counting and word lists are enough for the rules in scope, including readability scores, as Vale shows.
-- Sensible defaults can be found empirically. Work on docreview showed that readability scores are sensitive to text length, and a threshold that works for a vignette is wrong for a two-line parameter description. Rather than guessing, the defaults and any minimum text length for a rule to apply will be set by running the tool over real packages and looking at the distribution of scores, so that the rules aren't noisy out of the box.
-- Building on air's parser and jarl's design keeps the amount of novel Rust small. The parser layer is the first milestone, so that this is proven before the rule work starts.
+- Sensible defaults can be found empirically. Work on docreview showed that readability scores are sensitive to text length, and a threshold that works for a vignette is wrong for a short code comment. Rather than guessing, the defaults and any minimum text length for a rule to apply will be set by running the tool over real packages and looking at the distribution of scores, so that the rules aren't noisy out of the box.
+- Building on Vale keeps the amount of novel code small. Confirming that Vale can be installed and run from R on all platforms is the first milestone, so that this is proven before the rule work starts.
 
 ### External dependencies
 
@@ -76,9 +76,8 @@ Assumptions and ideas for mitigation are as follows:
 What external dependencies does the project have (e.g. libraries, services, other projects, etc.)?
 -->
 
-- air's R parser crates, pinned to a specific revision as jarl does.
-- A Rust Markdown parser such as pulldown-cmark.
-- jarl, not as a code dependency but as the design reference.
+- Vale, installed as a binary from its GitHub Releases.
+- Existing Vale style packages, such as Readability, as a starting point for rules.
 - GitHub Actions for CI and releases.
 
 Nothing requires a service or a paid account, so there are no ongoing costs.
