@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Nic Crane">
-<meta name="dcterms.date" content="2026-09-24">
+<meta name="dcterms.date" content="2026-10-01">
 
-<title>A documentation linter for R packages</title>
+<title>valer: a documentation linter for R packages</title>
 <style>
 
 span.smallcaps{font-variant: small-caps;}
@@ -2197,7 +2197,7 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">A documentation linter for R packages</h1>
+<h1 class="title">valer: a documentation linter for R packages</h1>
 </div>
 
 
@@ -2210,7 +2210,7 @@ vertical-align: -.125em;
   </div>
   <div class="quarto-title-meta-contents">
         <p class="affiliation">
-            NC Data Labs Ltd
+            Independent R consultant
           </p>
       </div>
   </div>
@@ -2221,7 +2221,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2026-09-24</p>
+      <p class="date">2026-10-01</p>
     </div>
   </div>
   
@@ -2233,17 +2233,16 @@ vertical-align: -.125em;
 </header>
 
 
-<p><em>This template was last revised on 2026-03-24.</em></p>
 <section id="executive-summary" class="level1">
 <h1>Executive Summary</h1>
 <!--
 This section provides a condensed view of the entire proposal, one page long.
 It should be a comprehensive high-level overview that captures the essence of the proposal, including its goals, methods, expected outcomes, deliverables, and budget.
 -->
-<p>R has some excellent tooling for code styling and linting, but there are gaps when thinking about consistency in the documentation and prose within R packages. Hard-to-read documentation costs users time, puts off newcomers, and is becoming more common as more package code and documentation is written by AI tools.</p>
-<p>Vale is the established tool for this job in many other ecosystems. It is a prose linter with rules defined as data, a library of published styles, and integrations for editors and CI. It can read Markdown and pull the text out of comments in R files, but that is as far as its knowledge of R goes. Its default styles report R function and argument names as spelling mistakes, it has no sense of how an R package is laid out, and it has to be installed and configured by hand outside of R.</p>
-<p>This project fills that gap with an R package that installs and runs Vale, and a Vale style built for R packages. Together they lint vignettes, READMEs and the comments in R source files, including the roxygen comments that become help pages, from the R console, the command line or a CI job. The style is assembled from Vale’s existing rules with thresholds set by running them across real CRAN packages and a vocabulary of R terms so the defaults are quiet out of the box.</p>
-<p>The deliverables are the package on CRAN, the style published for anyone using Vale directly, and a GitHub Action, over two milestones ending in February 2027, for a total of $4,500.</p>
+<p>R has good tooling for keeping code consistent, but nothing equivalent for the prose in a package: the help pages, vignettes, READMEs and comments. Hard-to-read documentation costs users time and puts off newcomers, and there’s more of it about as more package code and documentation gets written by AI tools.</p>
+<p><a href="https://vale.sh">Vale</a> is the prose linter most other ecosystems have settled on. Its rules are defined as data, there’s a library of published styles, and it already integrates with editors, GitHub Actions and pre-commit. It can read Markdown and pull the text out of comments in R files, but it doesn’t know anything else about R. Its default styles weren’t written with R packages in mind, and using it at all means installing and configuring a binary by hand.</p>
+<p>This proposal is for a Vale style for R package documentation, and an R package, valer, that installs Vale, writes the config for a project, and runs it from R. The style picks out the rules from Vale’s existing library that make sense for package docs, with thresholds set by running them over real CRAN packages and a vocabulary of R terms, so that the first run on a real package reports problems rather than noise. The package also writes a block into a project’s AGENTS.md so that AI coding agents run the linter on the documentation they write.</p>
+<p>The deliverables are the style, published for anyone using Vale directly, and the package on CRAN, over two milestones ending in February 2027, for $3,600.</p>
 </section>
 <section id="signatories" class="level1">
 <h1>Signatories</h1>
@@ -2269,13 +2268,6 @@ show their tack record.
 <li><a href="https://github.com/thisisnic">Nic Crane</a>: R developer with over 10 years of experience, one of the maintainers of the <a href="https://arrow.apache.org/docs/r/">arrow</a> R package and contributor to <a href="https://ellmer.tidyverse.org/">ellmer</a>.</li>
 </ul>
 </section>
-<section id="contributors" class="level2">
-<h2 class="anchored" data-anchor-id="contributors">Contributors</h2>
-<!--
-Who are the people who have actively helped with this proposal but
-won't necessarily be on the core project team later?
--->
-</section>
 <section id="consulted" class="level2">
 <h2 class="anchored" data-anchor-id="consulted">Consulted</h2>
 <!--
@@ -2283,17 +2275,16 @@ Who has been given the opportunity to provide feedback on the
 proposal?
 -->
 <ul>
-<li><a href="https://www.etiennebacher.com/">Etienne Bacher</a>: independent developer, author of <a href="https://jarl.etiennebacher.com/">jarl</a>, a fast linter for R funded by the ISC in 2025.</li>
+<li><a href="https://www.etiennebacher.com/">Etienne Bacher</a>: independent developer, author of <a href="https://jarl.etiennebacher.com/">jarl</a>, a fast linter for R funded by the ISC in 2025. Was consulted on an earlier draft of this as a more complex project which helped me revise it down to a smaller initial scope.</li>
 </ul>
 </section>
 </section>
 <section id="the-problem" class="level1">
 <h1>The Problem</h1>
-<p>When working in R, it’s already common to have standard conventions for code style: packages like <a href="https://lintr.r-lib.org/">lintr</a> <span class="citation" data-cites="hester2025">(<a href="#ref-hester2025" role="doc-biblioref">Hester et al. 2025</a>)</span> and tools like <a href="https://posit-dev.github.io/air/">air</a> and <a href="https://jarl.etiennebacher.com/">jarl</a> are widely used to ensure that code conforms to agreed standards. Documentation doesn’t receive the same attention. While <code>R CMD check</code> verifies that documentation exists and matches usage, there is no common tooling for ensuring that docs are readable by a human, whether that is the help pages, vignettes and READMEs read by users or the code comments read by contributors, and this responsibility falls to authors and reviewers.</p>
-<p>Documentation that is hard to read, whether because of dense sentences or a tone that assumes things are obvious, increases cognitive load <span class="citation" data-cites="sweller1988">(<a href="#ref-sweller1988" role="doc-biblioref">Sweller 1988</a>)</span>, frustrates users, and can be a real barrier to adoption.</p>
-<p>Organisations like rOpenSci recognise this, and their <a href="https://devguide.ropensci.org/">software review process</a> asks reviewers to judge whether documentation is clear and sufficient. The problem is also growing: R packages are increasingly written with the help of, or exclusively by, AI tools, and without oversight it’s easy to end up with verbose documentation.</p>
-<p>Some prior work exists. The <a href="https://github.com/thisisnic/docreview">docreview</a> package, on CRAN between 2021 and 2024, contained 5 checks including readability scores, but stalled due to the complexity of its architecture. The <a href="https://docs.ropensci.org/spelling/">spelling</a> package checks words but not prose. Outside of R, <a href="https://vale.sh">Vale</a> is a mature documentation linter with prose rules and packaged style guides, which runs in editors and on CI. It handles Markdown and can extract the text of comments from R source files, but it has no knowledge of R package structure or R vocabulary, its built-in styles flag function and argument names as spelling errors, and using it requires installing and configuring a separate binary outside of R.</p>
-<p>The R ecosystem lacks an opinionated documentation linter, usable from R, that helps both humans and AI tools write better docs for R packages.</p>
+<p>R already has conventions and tooling for code style. <a href="https://lintr.r-lib.org/">lintr</a> <span class="citation" data-cites="hester2025">(<a href="#ref-hester2025" role="doc-biblioref">Hester et al. 2025</a>)</span>, <a href="https://posit-dev.github.io/air/">air</a> and <a href="https://jarl.etiennebacher.com/">jarl</a> are widely used, and it’s normal for a package to enforce them on CI, but there’s nothing similar for documentation. <code>R CMD check</code> confirms that documentation exists and matches the function signatures, but whether a human can actually read it is left to authors and reviewers. That applies to the help pages, vignettes and READMEs users see as much as to the comments contributors rely on.</p>
+<p>Documentation that’s hard to read, whether because of long dense sentences or a tone that assumes things are obvious, increases cognitive load <span class="citation" data-cites="sweller1988">(<a href="#ref-sweller1988" role="doc-biblioref">Sweller 1988</a>)</span>, frustrates users, and puts people off using a package at all. rOpenSci’s <a href="https://devguide.ropensci.org/">software review process</a> asks reviewers to judge whether documentation is clear and sufficient, but reviewers are doing that by hand. More packages are also being written with the help of, or entirely by, AI tools, and without something checking, the result is often verbose.</p>
+<p>There’s been some prior work, including my own. The <a href="https://github.com/thisisnic/docreview">docreview</a> package was on CRAN from 2021 to 2024 with five checks including readability scores, and stalled because its architecture was more complicated than it needed to be. The <a href="https://docs.ropensci.org/spelling/">spelling</a> package checks words but not prose. Outside R, <a href="https://vale.sh">Vale</a> is a mature prose linter with packaged style guides that runs in editors and on CI. It handles Markdown and can extract comment text from R files, but it knows nothing about how an R package is laid out or what R vocabulary looks like, and you have to install and configure a separate binary to use it.</p>
+<p>What’s missing is an opinionated documentation linter for R packages that’s usable from R and helps both humans and AI tools write better docs.</p>
 </section>
 <section id="the-proposal" class="level1">
 <h1>The proposal</h1>
@@ -2314,10 +2305,11 @@ section.
 
 Include concrete actions you will take and estimated timeline.
 -->
-<p>This proposal is for an R package which wraps Vale, together with a Vale style written for R package documentation, so that documentation can be linted from R, on the command line and on CI. It lints both the external documentation of a package, its vignettes and READMEs, and the comments in its R source files, including the roxygen comments from which help pages are generated, and reports the file, line, rule and a message explaining what was wrong, as a data frame in R or as JSON for AI tools and CI reporting.</p>
-<p>Vale already provides rules for sentence length, readability scores, and words often reported by readers as condescending like “simply”, “just” and “obviously”, spread across several existing styles and tuned for general prose. The work in this project is to select the subset of those rules that make sense for R package documentation, set their thresholds by running them over real packages so that they aren’t noisy out of the box, and add a vocabulary of common R terms. Together these form a default style that ships with the package and is also published for people who use Vale directly. Rules are configured from a Vale config file at the package root, which the package can generate, so that users can adjust the defaults according to taste.</p>
-<p>Building on Vale keeps the amount of novel code small. Vale handles extracting comments from R files, parsing Markdown, running rules and integrating with editors, and its rules are defined as data rather than code, so the community can contribute rules without needing to write R. The package itself has three parts: locating an existing Vale binary or downloading one for the user’s platform when asked, following the pattern used by blogdown and tinytex; the style; and the R interface, config generation and GitHub Action.</p>
-<p>The main dependency is Vale itself, which is actively maintained and publishes binaries for Linux, macOS and Windows on every release. Nothing requires a service or a paid account, so there are no ongoing costs.</p>
+<p>The proposal is a Vale style for R package documentation, plus an R package, valer, that installs Vale, configures it and runs it, so documentation can be linted from R, from the command line or on CI. It covers a package’s vignettes and READMEs and the comments in its R source files, and reports the file, line, rule and a message explaining what was wrong. For R that’s a data frame, and for other tools, it’s Vale’s own JSON output.</p>
+<p>Vale already has rules for sentence length and readability scores, spread across several styles and tuned for general prose. This project would pick out the subset that makes sense for package documentation, set thresholds by running them over real packages so the defaults aren’t noisy, and add a vocabulary of common R terms. These become the default style, which ships with the package and is also published for people who use Vale directly. Rules are configured from a Vale config file at the package root, which the package can generate, so people can turn things off or tighten them to taste.</p>
+<p>Vale handles extracting comments from R files, parsing Markdown, running rules and integrating with editors, and because its rules are data rather than code, people can contribute rules without writing any R. It also has an official GitHub Action and a pre-commit hook, so once the style is installable those work without any extra code, and the package documents how to use them. This means there isn’t much new code to write.</p>
+<p>The package itself has three parts: finding an existing Vale binary or downloading one for the user’s platform when asked, the way tinytex does; a setup function that writes the Vale config for a project and installs the style; and a function that runs Vale and returns lints as a data frame. The setup function also writes a short block into the project’s AGENTS.md telling AI coding agents to run the linter on any documentation they write and fix what it reports. This means agents are checked against the same rules as everyone else.</p>
+<p>The main dependency is Vale itself, which is actively maintained and publishes binaries for Linux, macOS and Windows on every release. There are no ongoing costs.</p>
 </section>
 </section>
 <section id="project-plan" class="level1">
@@ -2345,14 +2337,14 @@ provide at least a high-level description of the implementation.
 Including target dates is really important as you need to be committed
 and the ISC need to have a means of tracking delivery
 -->
-<p>Initial experiments running Vale over an existing R package confirm that it extracts comments from R source files with correct line numbers and handles vignettes and READMEs without any additional work. They also show that its built-in styles are noisy on R code, with most reported problems being function and argument names flagged as spelling errors, which is what an R-specific style and vocabulary will address.</p>
+<p>I’ve given Vale a trial run over an existing R package to test out comment extraction. The results were noisy but workable. It picks up comments from R source files with correct line numbers and handles vignettes and READMEs without any extra work.</p>
 <section id="milestone-1---31st-january-2027-working-package-and-first-rules" class="level3">
 <h3 class="anchored" data-anchor-id="milestone-1---31st-january-2027-working-package-and-first-rules">Milestone 1 - 31st January 2027: working package and first rules</h3>
-<p>Consultation with package maintainers and a review of documentation feedback in public software review threads, such as rOpenSci’s, to decide which rules will be most useful in the default style. The code delivered is the R package which installs or locates Vale, runs it over a package, and returns lints as a data frame, with an initial set of rules and snapshot tests, working on Linux, macOS and Windows.</p>
+<p>This milestone starts with talking to package maintainers and reading through documentation feedback in public software review threads, such as rOpenSci’s, to decide which rules are most useful in the default style. The code delivered is the R package that installs or locates Vale, runs it over a package and returns lints as a data frame, with an initial set of rules and snapshot tests, working on Linux, macOS and Windows.</p>
 </section>
-<section id="milestone-2---28th-february-2027-default-style-release-and-github-action" class="level3">
-<h3 class="anchored" data-anchor-id="milestone-2---28th-february-2027-default-style-release-and-github-action">Milestone 2 - 28th February 2027: default style, release and GitHub Action</h3>
-<p>The remaining rules, the vocabulary of R terms, config file generation and JSON output, each rule documented with examples of passes and failures. A run over the 100 most downloaded CRAN packages drives tuning of the rules and defaults. The package is submitted to CRAN, the style is published so that it can be installed directly by Vale users, and a GitHub Action and pre-commit hook are released so that linting can run on CI, together with a command that writes the active rules into a project’s AGENTS.md file. A post on the R Consortium blog reports on the project.</p>
+<section id="milestone-2---28th-february-2027-default-style-and-release" class="level3">
+<h3 class="anchored" data-anchor-id="milestone-2---28th-february-2027-default-style-and-release">Milestone 2 - 28th February 2027: default style and release</h3>
+<p>This milestone covers the remaining rules, the vocabulary of R terms, and the setup function that writes the Vale config and the AGENTS.md block, with each rule documented with examples of what passes and what fails. The style is run over the 100 most downloaded CRAN packages and the results used to tune the rules and defaults. The package goes to CRAN and the style is published so Vale users can install it directly, with documentation covering use from R, from the command line, and on CI via Vale’s existing GitHub Action and pre-commit hook. The project is written up for the R Consortium blog.</p>
 </section>
 </section>
 <section id="other-aspects" class="level2">
@@ -2370,7 +2362,7 @@ to be shared quarterly on the R Consortium blog.
  - [ ] UseR!
  - [ ] ISC meetings
 -->
-<p>All code is MIT licensed and developed in the open on GitHub. The package will be submitted to CRAN and the style published on GitHub so that it can be used with Vale directly. The work will be publicised with a post on the R Consortium blog, posts on LinkedIn, Mastodon and Bluesky at each milestone, and submission to R Weekly.</p>
+<p>All code is MIT licensed and developed in the open on GitHub. The package will go to CRAN and the style will be published on GitHub so it can be used with Vale directly. Publicity is a post on the R Consortium blog, posts on LinkedIn, Mastodon and Bluesky at each milestone, and a submission to R Weekly.</p>
 </section>
 <section id="budget-funding-plan" class="level2">
 <h2 class="anchored" data-anchor-id="budget-funding-plan">Budget &amp; funding plan</h2>
@@ -2392,14 +2384,8 @@ to the project and the project period. The ISC reserves the right to vet
 how funds are used for each project separately. If in doubt, please reach
 out to us.
 -->
-<p>The budget is labour only, at USD 90 per hour, covering 50 hours of part-time work over two months. There are no other costs, as the project uses GitHub for hosting, CI and releases.</p>
+<p>The budget is labour only, at USD 90 per hour, for 40 hours of part-time work over two months. There are no other costs. GitHub covers hosting, CI and releases.</p>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 35%">
-<col style="width: 25%">
-<col style="width: 22%">
-<col style="width: 16%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Milestone</th>
@@ -2412,11 +2398,11 @@ out to us.
 <tr class="odd">
 <td>1: Working package and first rules</td>
 <td>31 Jan 2027</td>
-<td style="text-align: right;">30</td>
-<td style="text-align: right;">2,700</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">1,800</td>
 </tr>
 <tr class="even">
-<td>2: Default style, release and GitHub Action</td>
+<td>2: Default style and release</td>
 <td>28 Feb 2027</td>
 <td style="text-align: right;">20</td>
 <td style="text-align: right;">1,800</td>
@@ -2424,8 +2410,8 @@ out to us.
 <tr class="odd">
 <td><strong>Total</strong></td>
 <td></td>
-<td style="text-align: right;"><strong>50</strong></td>
-<td style="text-align: right;"><strong>4,500</strong></td>
+<td style="text-align: right;"><strong>40</strong></td>
+<td style="text-align: right;"><strong>3,600</strong></td>
 </tr>
 </tbody>
 </table>
@@ -2448,7 +2434,8 @@ What does success look like?
 <li>it lints R code comments, vignettes and READMEs using a default style that ships with the package, with rules configurable from a file at the package root</li>
 <li>the style is also published so that it can be installed and used directly by Vale users</li>
 <li>the defaults have been tuned so that the tool runs without error on the 100 most downloaded CRAN packages</li>
-<li>the GitHub Action, pre-commit hook and AGENTS.md command are released and documented</li>
+<li>the setup function writes the Vale config and the AGENTS.md block for a project</li>
+<li>use from R, the command line, and CI via Vale’s GitHub Action and pre-commit hook is documented</li>
 </ul>
 </section>
 <section id="measuring-success" class="level2">
@@ -2457,7 +2444,43 @@ What does success look like?
 How will we know when success is achieved, what markers can we use
 along the way
 -->
-<p>The project is successful if a package author can go from nothing to a first set of lints in a couple of minutes, with a default style that reports real problems rather than noise, and if the tool becomes a normal part of how people check documentation in the same way lintr is for code. The first is measured directly: the tuning run over the 100 most downloaded CRAN packages shows the hit rate per rule and how many of those hits are false positives, and the defaults are set from that. The second shows up as packages adding the GitHub Action to their CI, issues and pull requests from people outside the project, and the style being picked up by people who use Vale without the R package.</p>
+<p>This is a success if a package author can go from nothing to a first set of lints in a couple of minutes, with a default style that reports real problems rather than noise, and if it becomes a normal part of checking a package, like lintr is. The first can be measured directly. The tuning run over the 100 most downloaded CRAN packages gives a hit rate per rule, and the defaults get set from that. The second shows up as packages adding the style to their CI, issues and pull requests from people outside the project, and people using the style with Vale without the R package.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 27%">
+<col style="width: 44%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Target</th>
+<th>Measurement</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Install and first lints on a fresh machine</td>
+<td>Under 5 minutes following the README</td>
+<td>Checked on CI on Linux, macOS and Windows</td>
+</tr>
+<tr class="even">
+<td>Default style on the 100 most downloaded CRAN packages</td>
+<td>Runs without error on all 100</td>
+<td>Tuning run, with results published in the repo</td>
+</tr>
+<tr class="odd">
+<td>Package on CRAN, style installable by Vale</td>
+<td>Both released</td>
+<td>CRAN, Vale’s Packages config</td>
+</tr>
+<tr class="even">
+<td>Blog post</td>
+<td>1</td>
+<td>R Consortium blog</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="future-work" class="level2">
 <h2 class="anchored" data-anchor-id="future-work">Future work</h2>
@@ -2466,7 +2489,7 @@ How could this be extended / developed in the future by yourself
 and/or the community in general?
 -->
 <ul>
-<li>Roxygen-aware linting, so that rules can be applied per help topic and example code is not treated as prose</li>
+<li>Roxygen-aware linting of help pages, so that tags are handled properly, rules can be applied per help topic and example code is not treated as prose</li>
 <li>Linting of error and warning messages</li>
 <li>Additional named styles, so that organisations with a house style can publish their own rule sets for R packages</li>
 </ul>
