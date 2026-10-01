@@ -5,15 +5,16 @@ This section provides a condensed view of the entire proposal, one page long.
 It should be a comprehensive high-level overview that captures the essence of the proposal, including its goals, methods, expected outcomes, deliverables, and budget.
 -->
 
-R has some excellent tooling for code styling and linting, but there are gaps when thinking about consistency in the documentation and prose within R packages.
-Hard-to-read documentation costs users time, puts off newcomers, and is becoming more common as more package code and documentation is written by AI tools.
+R has good tooling for keeping code consistent, but nothing equivalent for the prose in a package: the help pages, vignettes, READMEs and comments.
+Hard-to-read documentation costs users time and puts off newcomers, and there's more of it about as more package code and documentation gets written by AI tools.
 
-Vale is the established tool for this job in many other ecosystems. It is a prose linter with rules defined as data, a library of published styles, and integrations for editors and CI.
-It can read Markdown and pull the text out of comments in R files, but that is as far as its knowledge of R goes.
-Its default styles report R function and argument names as spelling mistakes, it has no sense of how an R package is laid out, and it has to be installed and configured by hand outside of R.
+[Vale](https://vale.sh) is the prose linter most other ecosystems have settled on.
+Its rules are defined as data, there's a library of published styles, and it already integrates with editors, GitHub Actions and pre-commit.
+It can read Markdown and pull the text out of comments in R files, but it doesn't know anything else about R.
+Its default styles weren't written with R packages in mind, and using it at all means installing and configuring a binary by hand.
 
-This project fills that gap with an R package that installs and runs Vale, and a Vale style built for R packages.
-Together they lint vignettes, READMEs and the comments in R source files, including the roxygen comments that become help pages, from the R console, the command line or a CI job.
-The style is assembled from Vale's existing rules with thresholds set by running them across real CRAN packages and a vocabulary of R terms so the defaults are quiet out of the box.
+This proposal is for a Vale style for R package documentation, and an R package, valer, that installs Vale, writes the config for a project, and runs it from R.
+The style picks out the rules from Vale's existing library that make sense for package docs, with thresholds set by running them over real CRAN packages and a vocabulary of R terms, so that the first run on a real package reports problems rather than noise.
+The package also writes a block into a project's AGENTS.md so that AI coding agents run the linter on the documentation they write.
 
-The deliverables are the package on CRAN, the style published for anyone using Vale directly, and a GitHub Action, over two milestones ending in February 2027, for a total of $4,500.
+The deliverables are the style, published for anyone using Vale directly, and the package on CRAN, over two milestones ending in February 2027, for $3,600.

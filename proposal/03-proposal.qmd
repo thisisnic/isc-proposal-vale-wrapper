@@ -17,17 +17,22 @@ section.
 Include concrete actions you will take and estimated timeline.
 -->
 
-This proposal is for an R package which wraps Vale, together with a Vale style written for R package documentation, so that documentation can be linted from R, on the command line and on CI.
-It lints both the external documentation of a package, its vignettes and READMEs, and the comments in its R source files, including the roxygen comments from which help pages are generated, and reports the file, line, rule and a message explaining what was wrong, as a data frame in R or as JSON for AI tools and CI reporting.
+The proposal is a Vale style for R package documentation, plus an R package, valer, that installs Vale, configures it and runs it, so documentation can be linted from R, from the command line or on CI.
+It covers a package's vignettes and READMEs and the comments in its R source files, and reports the file, line, rule and a message explaining what was wrong.
+For R that's a data frame, and for other tools, it's Vale's own JSON output.
 
-Vale already provides rules for sentence length, readability scores, and words often reported by readers as condescending like "simply", "just" and "obviously", spread across several existing styles and tuned for general prose.
-The work in this project is to select the subset of those rules that make sense for R package documentation, set their thresholds by running them over real packages so that they aren't noisy out of the box, and add a vocabulary of common R terms.
-Together these form a default style that ships with the package and is also published for people who use Vale directly.
-Rules are configured from a Vale config file at the package root, which the package can generate, so that users can adjust the defaults according to taste.
+Vale already has rules for sentence length and readability scores, spread across several styles and tuned for general prose.
+This project would pick out the subset that makes sense for package documentation, set thresholds by running them over real packages so the defaults aren't noisy, and add a vocabulary of common R terms.
+These become the default style, which ships with the package and is also published for people who use Vale directly.
+Rules are configured from a Vale config file at the package root, which the package can generate, so people can turn things off or tighten them to taste.
 
-Building on Vale keeps the amount of novel code small.
-Vale handles extracting comments from R files, parsing Markdown, running rules and integrating with editors, and its rules are defined as data rather than code, so the community can contribute rules without needing to write R.
-The package itself has three parts: locating an existing Vale binary or downloading one for the user's platform when asked, following the pattern used by blogdown and tinytex; the style; and the R interface, config generation and GitHub Action.
+Vale handles extracting comments from R files, parsing Markdown, running rules and integrating with editors, and because its rules are data rather than code, people can contribute rules without writing any R.
+It also has an official GitHub Action and a pre-commit hook, so once the style is installable those work without any extra code, and the package documents how to use them.
+This means there isn't much new code to write.
+
+The package itself has three parts: finding an existing Vale binary or downloading one for the user's platform when asked, the way tinytex does; a setup function that writes the Vale config for a project and installs the style; and a function that runs Vale and returns lints as a data frame.
+The setup function also writes a short block into the project's AGENTS.md telling AI coding agents to run the linter on any documentation they write and fix what it reports.
+This means agents are checked against the same rules as everyone else.
 
 The main dependency is Vale itself, which is actively maintained and publishes binaries for Linux, macOS and Windows on every release.
-Nothing requires a service or a paid account, so there are no ongoing costs.
+There are no ongoing costs.

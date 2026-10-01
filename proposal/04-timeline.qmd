@@ -23,20 +23,19 @@ Including target dates is really important as you need to be committed
 and the ISC need to have a means of tracking delivery
 -->
 
-Initial experiments running Vale over an existing R package confirm that it extracts comments from R source files with correct line numbers and handles vignettes and READMEs without any additional work.
-They also show that its built-in styles are noisy on R code, with most reported problems being function and argument names flagged as spelling errors, which is what an R-specific style and vocabulary will address.
+I've given Vale a trial run over an existing R package to test out comment extraction. The results were noisy but workable. It picks up comments from R source files with correct line numbers and handles vignettes and READMEs without any extra work.
 
 ### Milestone 1 - 31st January 2027: working package and first rules
 
-Consultation with package maintainers and a review of documentation feedback in public software review threads, such as rOpenSci's, to decide which rules will be most useful in the default style.
-The code delivered is the R package which installs or locates Vale, runs it over a package, and returns lints as a data frame, with an initial set of rules and snapshot tests, working on Linux, macOS and Windows.
+This milestone starts with talking to package maintainers and reading through documentation feedback in public software review threads, such as rOpenSci's, to decide which rules are most useful in the default style.
+The code delivered is the R package that installs or locates Vale, runs it over a package and returns lints as a data frame, with an initial set of rules and snapshot tests, working on Linux, macOS and Windows.
 
-### Milestone 2 - 28th February 2027: default style, release and GitHub Action
+### Milestone 2 - 28th February 2027: default style and release
 
-The remaining rules, the vocabulary of R terms, config file generation and JSON output, each rule documented with examples of passes and failures.
-A run over the 100 most downloaded CRAN packages drives tuning of the rules and defaults.
-The package is submitted to CRAN, the style is published so that it can be installed directly by Vale users, and a GitHub Action and pre-commit hook are released so that linting can run on CI, together with a command that writes the active rules into a project's AGENTS.md file.
-A post on the R Consortium blog reports on the project.
+This milestone covers the remaining rules, the vocabulary of R terms, and the setup function that writes the Vale config and the AGENTS.md block, with each rule documented with examples of what passes and what fails.
+The style is run over the 100 most downloaded CRAN packages and the results used to tune the rules and defaults.
+The package goes to CRAN and the style is published so Vale users can install it directly, with documentation covering use from R, from the command line, and on CI via Vale's existing GitHub Action and pre-commit hook.
+The project is written up for the R Consortium blog.
 
 ## Other aspects
 
@@ -54,8 +53,8 @@ to be shared quarterly on the R Consortium blog.
  - [ ] ISC meetings
 -->
 
-All code is MIT licensed and developed in the open on GitHub. The package will be submitted to CRAN and the style published on GitHub so that it can be used with Vale directly.
-The work will be publicised with a post on the R Consortium blog, posts on LinkedIn, Mastodon and Bluesky at each milestone, and submission to R Weekly.
+All code is MIT licensed and developed in the open on GitHub. The package will go to CRAN and the style will be published on GitHub so it can be used with Vale directly.
+Publicity is a post on the R Consortium blog, posts on LinkedIn, Mastodon and Bluesky at each milestone, and a submission to R Weekly.
 
 ## Budget & funding plan
 
@@ -78,11 +77,11 @@ how funds are used for each project separately. If in doubt, please reach
 out to us.
 -->
 
-The budget is labour only, at USD 90 per hour, covering 50 hours of part-time work over two months.
-There are no other costs, as the project uses GitHub for hosting, CI and releases.
+The budget is labour only, at USD 90 per hour, for 40 hours of part-time work over two months.
+There are no other costs. GitHub covers hosting, CI and releases.
 
 | Milestone | Target | Hours | USD |
 |-----------|--------|------:|----:|
-| 1: Working package and first rules | 31 Jan 2027 | 30 | 2,700 |
-| 2: Default style, release and GitHub Action | 28 Feb 2027 | 20 | 1,800 |
-| **Total** | | **50** | **4,500** |
+| 1: Working package and first rules | 31 Jan 2027 | 20 | 1,800 |
+| 2: Default style and release | 28 Feb 2027 | 20 | 1,800 |
+| **Total** | | **40** | **3,600** |

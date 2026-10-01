@@ -20,17 +20,11 @@ show their tack record.
 
 - [Nic Crane](https://github.com/thisisnic): R developer with over 10 years of experience, one of the maintainers of the [arrow](https://arrow.apache.org/docs/r/) R package and contributor to [ellmer](https://ellmer.tidyverse.org/).
 
-## Contributors
-<!--
-Who are the people who have actively helped with this proposal but
-won't necessarily be on the core project team later?
--->
-
 ## Consulted
 <!--
 Who has been given the opportunity to provide feedback on the
 proposal?
 -->
 
-- [Etienne Bacher](https://www.etiennebacher.com/): independent developer, author of [jarl](https://jarl.etiennebacher.com/), a fast linter for R funded by the ISC in 2025.
+- [Etienne Bacher](https://www.etiennebacher.com/): independent developer, author of [jarl](https://jarl.etiennebacher.com/), a fast linter for R funded by the ISC in 2025. Was consulted on an earlier draft of this as a more complex project which helped me revise it down to a smaller initial scope.
 

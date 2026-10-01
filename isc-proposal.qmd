@@ -1,9 +1,9 @@
 ---
-title: "A documentation linter for R packages"
+title: "valer: a documentation linter for R packages"
 author:
   - name: Nic Crane
     affiliations:
-      - "NC Data Labs Ltd"
+      - "Independent R consultant"
 
 date: today
 date-format: iso
@@ -16,8 +16,6 @@ format:
       - right=1.25in
 bibliography: references.bib
 ---
-
-_This template was last revised on 2026-03-24._
 
 
 {{< include proposal/00-exec-summary.qmd >}}

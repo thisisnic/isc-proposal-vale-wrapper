@@ -16,7 +16,8 @@ The project is complete when:
 - it lints R code comments, vignettes and READMEs using a default style that ships with the package, with rules configurable from a file at the package root
 - the style is also published so that it can be installed and used directly by Vale users
 - the defaults have been tuned so that the tool runs without error on the 100 most downloaded CRAN packages
-- the GitHub Action, pre-commit hook and AGENTS.md command are released and documented
+- the setup function writes the Vale config and the AGENTS.md block for a project
+- use from R, the command line, and CI via Vale's GitHub Action and pre-commit hook is documented
 
 ## Measuring success
 <!--
@@ -24,9 +25,16 @@ How will we know when success is achieved, what markers can we use
 along the way
 -->
 
-The project is successful if a package author can go from nothing to a first set of lints in a couple of minutes, with a default style that reports real problems rather than noise, and if the tool becomes a normal part of how people check documentation in the same way lintr is for code.
-The first is measured directly: the tuning run over the 100 most downloaded CRAN packages shows the hit rate per rule and how many of those hits are false positives, and the defaults are set from that.
-The second shows up as packages adding the GitHub Action to their CI, issues and pull requests from people outside the project, and the style being picked up by people who use Vale without the R package.
+This is a success if a package author can go from nothing to a first set of lints in a couple of minutes, with a default style that reports real problems rather than noise, and if it becomes a normal part of checking a package, like lintr is.
+The first can be measured directly. The tuning run over the 100 most downloaded CRAN packages gives a hit rate per rule, and the defaults get set from that.
+The second shows up as packages adding the style to their CI, issues and pull requests from people outside the project, and people using the style with Vale without the R package.
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Install and first lints on a fresh machine | Under 5 minutes following the README | Checked on CI on Linux, macOS and Windows |
+| Default style on the 100 most downloaded CRAN packages | Runs without error on all 100 | Tuning run, with results published in the repo |
+| Package on CRAN, style installable by Vale | Both released | CRAN, Vale's Packages config |
+| Blog post | 1 | R Consortium blog |
 
 ## Future work
 <!--
@@ -34,6 +42,6 @@ How could this be extended / developed in the future by yourself
 and/or the community in general?
 -->
 
-- Roxygen-aware linting, so that rules can be applied per help topic and example code is not treated as prose
+- Roxygen-aware linting of help pages, so that tags are handled properly, rules can be applied per help topic and example code is not treated as prose
 - Linting of error and warning messages
 - Additional named styles, so that organisations with a house style can publish their own rule sets for R packages
